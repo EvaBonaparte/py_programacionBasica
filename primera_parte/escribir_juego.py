@@ -9,19 +9,17 @@ def escribir_juego(nombre_archivo, tablero, diccionario):
     # Crear nombre del archivo
     texto = nombre_archivo   
     with open(texto +'.csv', 'w', newline='') as archivo1:
-        archivo1 = csv.DictWriter(write(str(tablero)), delimiter = ',')
+        archivo1 = csv.writer(archivo1)
         archivo1.writerows(tablero)
     with open(texto + '_solucion.csv', 'w', newline='') as nombre_archivo:
         archivo2 = (texto + '_solucion.csv', 'a')
-        archivo2 = csv.DictWriter(write(str(tablero, diccionario)), delimiter = ',')
+        archivo1 = csv.writer(archivo1)
+        archivo2 = csv.DictWriter(diccionario, delimiter = ',')
         archivo2 = (tablero)
 
     return archivo1, archivo2
     
     
-
-
-
 def main():
     N, var_palabras, nombre_archivo = pedir_datos_tablero()
     print('hola')
