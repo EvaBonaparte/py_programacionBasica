@@ -14,26 +14,21 @@ def generar_tablero(N, var_palabras):
             tablero[i].append(-1)        
     # Acá van puestas las palabras de forma vertical.
     for palabra in var_palabras:
-        while palabra != 1: 
-            if palabra in tablero:
-                return print(palabra)
-            else:
-                for palabra in var_palabras:
-                    index_f = random.randrange(2, N-(N/3))
-                    index_c = random.randrange(N)
+        index_c = random.randrange(2, N-(N/3))
+        index_f = random.randrange(N)
+        index_inicialC = index_c
+        index_inicialF = index_f
 
-                    letras_sueltas = list(palabra)
-                    respuestas[palabra] = {
-                        "x_inicial": index_f, 
-                        "y_inicial" : index_c,
-                    }       
-                    for letra in letras_sueltas:
-                        tablero[index_f][index_c] = letra
-                        index_f += 1
-                    respuestas[palabra] = {
-                        "x_final": index_f, 
-                    "y_final" : index_c,
-                    }
+        letras_sueltas = list(palabra)
+        for letra in letras_sueltas:
+            tablero[index_c][index_f] = letra
+            index_c += 1
+        respuestas[palabra] = {
+            "x_inicial": index_inicialC, 
+            "y_inicial" : index_inicialF,
+            "x_final": index_c, 
+            "y_final" : index_f,
+        }
     # #Recorrer la matriz:
     i = 0
     j = 0
@@ -52,3 +47,4 @@ def main():
     N, var_palabras, nombre_archivo = pedir_datos_tablero()
     generar_tablero(N, var_palabras)
     return
+    
