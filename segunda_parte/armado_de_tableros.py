@@ -1,9 +1,7 @@
-from os import write
 import string
 import random
 import csv
 
-from trabajoFinal.segunda_parte.sopa_de_letras import Tablero
 #TODO: Este programa trabaja con varias funciones para crear una experiencia completa de creación de sopa de letras. La sopa de letras propiamente dicha se llamará "tablero" a lo largo del código.
 #TODO: El usuario deberá ingresar un número N (que será la cantidad de filas y columnas del tablero que como mínimo debe ser 15), una lista de palabras llamada var_palabras (las cuales tienen que tener un length máximo de N/3)
 #TODO: También va a crear el nombre de usuario y el nombre del archivo que tendrá. Se crearán dos archivos (uno con el tablero, otro con el tablero + un diccionario con las coordenadas de cada palabra a modo de solución)
@@ -135,6 +133,10 @@ class Obtener_Datos: # Acá pido los datos con los que voy a crear el tablero as
 
 class Programa: # Es la clase principal, permite ejecutar el armado de tableros llamando al resto de las clases del archivo.
     def main():
-        pass
+        N, var_palabras, nombre_archivo = Obtener_Datos.pedir_datos_tablero()
+        tablero, respuestas = Generador_Tableros.generar_tablero(N, var_palabras, nombre_archivo)
+        Escritor.crear_archivo(tablero)
+        Escritor.crear_solucion(tablero, respuestas)
 
 Programa.main()
+#! No entiendo el error "TypeError: pedir_datos_tablero() missing 1 required positional argument: 'self'" Tenia entendido que no tenía que pasar el self como parámetro
