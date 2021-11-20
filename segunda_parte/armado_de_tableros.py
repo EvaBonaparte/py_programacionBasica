@@ -4,37 +4,38 @@ import random
 import csv
 
 from trabajoFinal.segunda_parte.sopa_de_letras import Tablero
+#TODO: Este programa trabaja con varias funciones para crear una experiencia completa de creación de sopa de letras. La sopa de letras propiamente dicha se llamará "tablero" a lo largo del código.
+#TODO: El usuario deberá ingresar un número N (que será la cantidad de filas y columnas del tablero que como mínimo debe ser 15), una lista de palabras llamada var_palabras (las cuales tienen que tener un length máximo de N/3)
+#TODO: También va a crear el nombre de usuario y el nombre del archivo que tendrá. Se crearán dos archivos (uno con el tablero, otro con el tablero + un diccionario con las coordenadas de cada palabra a modo de solución)
 
-class Programa:
-    def main():
-        pass
 
-class Escritor:
+class Escritor: # Crea los archivos donde se va a almacenar la información (funciona como "base de datos")
     def __init__(self, diccionario, texto):
         self.texto = texto
         self.diccionario = diccionario
         return
-    def crear_archivo(self): 
+    def crear_archivo(self): #Crea el archivo con el tablero de sopa de letras
         with open(self.texto +'.csv', 'w', newline='') as archivo1:
             archivo1 = csv.writer(archivo1)
             archivo1.writerows(self.tablero)
         return archivo1
 
-    def crear_solucion(self):
+    def crear_solucion(self): # Crea el archivo que contiene el tablero de la sopa de letras + el diccionario con las soluciones
         with open(self.texto + '_solucion.csv', 'w', newline='') as nombre_archivo:
             archivo2 = (self.texto + '_solucion.csv', 'a')
             archivo2 = csv.writer(archivo2)
             archivo2 = csv.DictWriter(self.diccionario, delimiter = ',')
             archivo2 = (self.tablero)
         return archivo2
+    
 
-class Generador_Tableros:
+class Generador_Tableros: # Crea los tableros de la sopa de letras
     def __init__(self, N, var_palabras):
         self.N = N
         self.var_palabras = var_palabras
 
 
-    def generar_tablero(self):
+    def generar_tablero(self): # Crea el tablero propiamente dicho
         self.tablero = []
         self.respuestas = {}
         for j in range(0,self.N): #cantidad de filas
@@ -43,8 +44,8 @@ class Generador_Tableros:
         for j in range(0,self.N): #cantidad de columnas
             for i in range(0,self.N):
                 self.tablero[i].append(-1)        
-        # Acá van puestas las palabras de forma vertical.
-        for self.palabra in self.var_palabras:
+        
+        for self.palabra in self.var_palabras:# Acá van puestas las palabras de forma vertical.
             self.index_c = random.randrange(2, self.N-(self.N/3))
             self.index_f = random.randrange(self.N)
             self.index_inicialC = self.index_c
@@ -68,18 +69,19 @@ class Generador_Tableros:
                 if self.tablero [self.l][self.j] == -1 :
                     self.tablero [self.l][self.j] = random.choice(string.ascii_lowercase)
 
+        #Acá cambio los separadores de , por |
         separador = " | "
         for x in self.tablero: 
             print(separador.join(map(str,x))) 
         
         return self.tablero, self.respuestas
 
-class Obtener_Datos:
+class Obtener_Datos: # Acá pido los datos con los que voy a crear el tablero así como los datos del usuario para que ahí se almacenen los puntos, etc.
     def __init__(self, dato_pedido, condicion):
         self.dato_pedido = dato_pedido
         self.condicion = condicion
 
-    def validacion (self):
+    def validacion (self): # Metodo que me permite validar algunos datos
         while self.dato_pedido != 0: 
             if self.dato_pedido >= self.condicion:
                 return print(self.dato_pedido)
@@ -87,7 +89,7 @@ class Obtener_Datos:
                 self.dato_pedido = int(input("Vuelva a colocar el dato nuevamente: "))
         return
 
-    def pedir_datos_tablero (self):
+    def pedir_datos_tablero (self): #este metodo se encarga de pedir y validar todos los datos que necesito para crear el tablero.
         # Numero entero
         N = int(input("Seleccione una cantidad de filas y columnas mayor o igual a 15: "))
         self.validacion(N, 15)
@@ -118,11 +120,11 @@ class Obtener_Datos:
             if len(self.nombre_archivo) < 30:
                 break
                         
-        #creación tupla
+        #creación tupla que contiene todos los datos creados en este método
         self.tupla=(N, self.lista_palabras, self.nombre_archivo)    
         return self.tupla
 
-    def pedir_datos_usuario(self):
+    def pedir_datos_usuario(self): #Acá pido el nombre de usuario para crear una base de datos de usuarios y luego poder ingresarlo cada vez que juego
         self.usuario = str(input("Coloque a continuación el nombre de usuario con el que se vá a loguear (no debe ser mayor a 40 caracteres): "))
         while len(self.usuario) > 40:
             print("Cantidad de caracteres no valida")
@@ -131,3 +133,8 @@ class Obtener_Datos:
                 break
 
 
+class Programa: # Es la clase principal, permite ejecutar el armado de tableros llamando al resto de las clases del archivo.
+    def main():
+        pass
+
+Programa.main()
