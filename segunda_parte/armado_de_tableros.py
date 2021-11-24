@@ -7,79 +7,19 @@ import csv
 #TODO: También va a crear el nombre de usuario y el nombre del archivo que tendrá. Se crearán dos archivos (uno con el tablero, otro con el tablero + un diccionario con las coordenadas de cada palabra a modo de solución)
 
 
-class Escritor: # Crea los archivos donde se va a almacenar la información (funciona como "base de datos")
-    def __init__(self, diccionario, texto):
-        self.texto = texto
-        self.diccionario = diccionario
-        return
-    def crear_archivo(self): #Crea el archivo con el tablero de sopa de letras
-        with open(self.texto +'.csv', 'w', newline='') as archivo1:
-            archivo1 = csv.writer(archivo1)
-            archivo1.writerows(self.tablero)
-        return archivo1
-
-    def crear_solucion(self): # Crea el archivo que contiene el tablero de la sopa de letras + el diccionario con las soluciones
-        with open(self.texto + '_solucion.csv', 'w', newline='') as nombre_archivo:
-            archivo2 = (self.texto + '_solucion.csv', 'a')
-            archivo2 = csv.writer(archivo2)
-            archivo2 = csv.DictWriter(self.diccionario, delimiter = ',')
-            archivo2 = (self.tablero)
-        return archivo2
+class Obtener_Datos: 
     
+    #* Esta clase tiene que tener todas las funciones que tienen que ver con la toma de input, es decir, todas las funciones de validacion,
+    #* pedir_dato y las dos funciones que obtienen los datos: Obtener_datos_tablero y obtener_datos_usuario.
+    #* Obtener_Datos es una clase que no toma ningun argumento en el constructor.
 
-class Generador_Tableros: # Crea los tableros de la sopa de letras
-    def __init__(self, N, var_palabras):
-        self.N = N
-        self.var_palabras = var_palabras
+    
+    def __init__(self):
+        return
 
-
-    def generar_tablero(self): # Crea el tablero propiamente dicho
-        self.tablero = []
-        self.respuestas = {}
-        for j in range(0,self.N): #cantidad de filas
-            self.tablero.append([])
-        # iteramos x cada cuadrado de la matriz
-        for j in range(0,self.N): #cantidad de columnas
-            for i in range(0,self.N):
-                self.tablero[i].append(-1)        
-        
-        for self.palabra in self.var_palabras:# Acá van puestas las palabras de forma vertical.
-            self.index_c = random.randrange(2, self.N-(self.N/3))
-            self.index_f = random.randrange(self.N)
-            self.index_inicialC = self.index_c
-            self.index_inicialF = self.index_f
-
-            self.letras_sueltas = list(self.palabra)
-            for self.letra in self.letras_sueltas:
-                self.tablero[self.index_c][self.index_f] = self.letra
-                self.index_c += 1
-            self.respuestas[self.palabra] = {
-                "x_inicial": self.index_inicialC, 
-                "y_inicial" : self.index_inicialF,
-                "x_final": self.index_c, 
-                "y_final" : self.index_f,
-            }
-        # #Recorrer la matriz:
-        self.l = 0
-        self.j = 0
-        for self.l in range(0,self.N):
-            for self.j in range(0,self.N):
-                if self.tablero [self.l][self.j] == -1 :
-                    self.tablero [self.l][self.j] = random.choice(string.ascii_lowercase)
-
-        #Acá cambio los separadores de , por |
-        separador = " | "
-        for x in self.tablero: 
-            print(separador.join(map(str,x))) 
-        
-        return self.tablero, self.respuestas
-
-class Obtener_Datos: # Acá pido los datos con los que voy a crear el tablero así como los datos del usuario para que ahí se almacenen los puntos, etc.
-    def __init__(self, dato_pedido, condicion):
+    def validacion (self, dato_pedido, condicion): # Metodo que me permite validar algunos datos
         self.dato_pedido = dato_pedido
         self.condicion = condicion
-
-    def validacion (self): # Metodo que me permite validar algunos datos
         while self.dato_pedido != 0: 
             if self.dato_pedido >= self.condicion:
                 return print(self.dato_pedido)
@@ -87,56 +27,137 @@ class Obtener_Datos: # Acá pido los datos con los que voy a crear el tablero as
                 self.dato_pedido = int(input("Vuelva a colocar el dato nuevamente: "))
         return
 
+    def toma_numero (self):
+        self.N = int(input("Seleccione una cantidad de filas y columnas mayor o igual a 15: "))
+        return self.N
+
     def pedir_datos_tablero (self): #este metodo se encarga de pedir y validar todos los datos que necesito para crear el tablero.
         # Numero entero
-        N = int(input("Seleccione una cantidad de filas y columnas mayor o igual a 15: "))
-        self.validacion(N, 15)
+        N = self.toma_numero() #! Está bien ponerle self. si es una funcion???
+        self.validacion(N, 15) 
 
         #var_palabra es la variable que voy a usar para medir la longitud y la cantidad minima de palabras
-        self.var_palabra = int(N / 3)
+        var_palabra = int(self.N / 3)
         #pedir las palabras, fijar la cantidad máxima de palabras y su longitud. Se valida solo 
-        self.lista_palabras = []
-        print("Acontinuación coloque una palabra que tenga menos de ", self.var_palabra, " letras.")
+        lista_palabras = []
+        print("Acontinuación coloque una palabra que tenga menos de ", var_palabra, " letras.")
         print ("Si quiere terminar la carga de palabras coloque la palabra 'fin'")
-        self.palabra= ""
-        while len(self.lista_palabras) < (self.var_palabra - 1) and self.palabra != "fin":
-            self.palabra = input("Coloque una palabra: ").lower()
-            if self.palabra == "fin":
+        palabra= ""
+        while len(lista_palabras) < (var_palabra - 1) and palabra != "fin":
+            palabra = input("Coloque una palabra: ").lower()
+            if palabra == "fin":
                 print ("Ya termino la carga de palabras.")
-            elif len(self.palabra) < self.var_palabra:
-                self.lista_palabras.append(self.palabra)
+            elif len(palabra) < var_palabra:
+                lista_palabras.append(palabra)
             else:
-                self.palabra = print ("No colocó el largo requerido.")
+                palabra = print ("No colocó el largo requerido.")
 
-        print(self.lista_palabras)
+        print(lista_palabras)
 
         # Toma nombre archivo y validación
-        self.nombre_archivo = str(input("Coloque a continuación el nombre del archivo que va a almacenar sus datos (no debe ser mayor a 30 caracteres): "))
-        while len(self.nombre_archivo) > 30:
+        nombre_archivo = str(input("Coloque a continuación el nombre del archivo que va a almacenar sus datos (no debe ser mayor a 30 caracteres): "))
+        while len(nombre_archivo) > 30:
             print("Cantidad de caracteres no valida")
-            self.nombre_archivo = str(input("Coloque nuevamente un nombre de archivo con menos de 30 letras: "))
-            if len(self.nombre_archivo) < 30:
+            nombre_archivo = str(input("Coloque nuevamente un nombre de archivo con menos de 30 letras: "))
+            if len(nombre_archivo) < 30:
                 break
                         
         #creación tupla que contiene todos los datos creados en este método
-        self.tupla=(N, self.lista_palabras, self.nombre_archivo)    
-        return self.tupla
+        tupla=(N, lista_palabras, nombre_archivo)    
+        return tupla
 
-    def pedir_datos_usuario(self): #Acá pido el nombre de usuario para crear una base de datos de usuarios y luego poder ingresarlo cada vez que juego
-        self.usuario = str(input("Coloque a continuación el nombre de usuario con el que se vá a loguear (no debe ser mayor a 40 caracteres): "))
-        while len(self.usuario) > 40:
-            print("Cantidad de caracteres no valida")
-            self.usuario = str(input("Coloque nuevamente un nombre de usuario con menos de 40 letras: "))
-            if len(self.usuario) < 40:
-                break
 
+
+class Generador_Tableros: 
+    
+    #* La clase toma N y lista_palabras en el constructor, que son datos que obtuvimos desde obtener_datos_tablero (de la clase anterior).
+    #* Tiene una funcion, generar, que va a retornar el tablero y el diccionario (respuestas).
+    def __init__(self, N, var_palabras):
+        self.N = N
+        self.var_palabras = var_palabras
+
+
+    def generar_tablero(self): # Crea el tablero propiamente dicho
+        tipo_posicion = ["horizontal", "vertical"]
+        tablero = []
+        for j in range(0,self.N): #cantidad de filas
+            tablero.append([])
+        # iteramos x cada cuadrado de la matriz
+        for j in range(0,self.N): #cantidad de columnas
+            for i in range(0,self.N):
+                tablero[i].append("")
+        
+        for palabra in self.var_palabras: #Este for itera la lista de palabras
+            palabra_caracter = list(palabra)
+            respuestas = {}
+            index_c = random.randrange(2, self.N-(self.N/3))
+            index_f = random.randrange(self.N)
+            index_inicialC = index_c
+            index_inicialF = index_f
+            posicion = tipo_posicion[random.randint(0,1)] #Le doy la posicion a la palabra
+            for l in range(0, len(palabra_caracter)): #Recorre el largo de la palabra
+                if(tablero[index_c][index_f]==""): 
+                    tablero[index_c][index_f] = palabra_caracter[l]
+                    if(posicion == "horizontal"):    #Verifica la posicion 
+                        index_f+=1
+                    else:
+                        index_c+=1
+            respuestas[palabra] = {
+                "x_inicial": index_inicialC,
+                "y_inicial" : index_inicialF,
+                "x_final": index_c,
+                "y_final" : index_f,
+                }
+            
+        # #Recorrer la matriz:
+        i = 0
+        j = 0
+        for i in range(0,self.N):
+            for j in range(0,self.N):
+                if tablero [i][j] == "" :
+                    tablero [i][j] = random.choice(string.ascii_lowercase)
+
+        #Acá cambio los separadores de , por |
+        separador = " | "
+        for x in tablero: 
+            print(separador.join(map(str,x))) 
+        
+        return tablero, respuestas
+
+
+class Escritor: 
+    
+    #* Crea los archivos donde se va a almacenar la información. Los nombres son puestos por el usuario en la clase Obtener_Datos y están en formato csv
+    #* la función crear_archivo crea un archivo solo con la sopa de letras (tablero) y crear_solucion crea un archivo con el nombre puesto por el usuario + _solucion
+    #* que tiene adentro la sopa de letras (tablero) y las coordenadas de las palabras a modo de respuesta (diccionario/respuestas)
+    def __init__(self, diccionario, texto, tablero):
+        self.texto = texto
+        self.diccionario = diccionario
+        self.tablero = tablero
+        return
+    def crear_archivo(self): #Crea el archivo con el tablero de sopa de letras
+        with open(self.texto +'.csv', 'w', newline='') as archivo1:
+            archivo1 = csv.writer(archivo1)
+            archivo1.writerows(self.tablero)
+        return 
+
+    def crear_solucion(self): # Crea el archivo que contiene el tablero de la sopa de letras + el diccionario con las soluciones
+        with open(self.texto + '_solucion.csv', 'w', newline='') as archivo2:
+            encabezado = ["palabra", "x_inicial_","y_inicial","y_final","x_final"]
+            archivo2 = csv.DictWriter(self.texto, fieldnames = encabezado)
+            archivo2.writeheader()
+            for key,valores in self.diccionario.items():
+                archivo2.writerow([key, valores])
+            
+        return 
+    
 
 class Programa: # Es la clase principal, permite ejecutar el armado de tableros llamando al resto de las clases del archivo.
     def main():
-        N, var_palabras, nombre_archivo = Obtener_Datos.pedir_datos_tablero()
-        tablero, respuestas = Generador_Tableros.generar_tablero(N, var_palabras, nombre_archivo)
-        Escritor.crear_archivo(tablero)
-        Escritor.crear_solucion(tablero, respuestas)
+        N, var_palabras, nombre_archivo = Obtener_Datos().pedir_datos_tablero()
+        tablero, diccionario = Generador_Tableros(N, var_palabras).generar_tablero()
+        crear_los_archivos = Escritor(diccionario, nombre_archivo, tablero)
+        crear_los_archivos.crear_archivo()
+        crear_los_archivos.crear_solucion()
 
 Programa.main()
-#! No entiendo el error "TypeError: pedir_datos_tablero() missing 1 required positional argument: 'self'" Tenia entendido que no tenía que pasar el self como parámetro

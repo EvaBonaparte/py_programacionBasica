@@ -1,15 +1,31 @@
 import string
 import csv
-from armado_de_tableros import Obtener_Datos #Para tener el metodo para pedir datos_usuario
-from armado_de_tableros import Generador_Tableros
 
-from segunda_parte.funciones_sueltas import C
 
 
 #TODO: Este programa permite jugar con los tableros/sopas de letras creados en el programa armado_de_tableros.py
 #TODO: Funciona de la siguiente manera: Pide al usuario nombre y tablero a usar (hace validaciones). Muestra al usuario el tablero elegido y luego le pide que ingrese las palabras que encuentra. 
 #TODO: Una vez encontradas esas palabras, reimprime el tablero pero esta vez con la palabra en mayuscula. El juego termina una vez que se encontraron todas las palabras o el usuario decide terminar el juego.
 #TODO: Por último se devuelve el nombre del usuario + puntaje del usuario (cuantas palabras encontradas en relación a cuantas palabras había), y también dos listas: Una con las palabras encontradas en el orden que fueron encontradas y otra lista con las palabras que faltaron encontrar (si las hay) en orden alfabetico. 
+
+class Obtener_Datos:
+    def __init__(self):
+        pass
+
+    def pedir_datos_usuario(self): #Acá pido el nombre de usuario para crear una base de datos de usuarios y luego poder ingresarlo cada vez que juego
+        usuario = str(input("Coloque a continuación el nombre de usuario con el que se vá a loguear (no debe ser mayor a 40 caracteres): "))
+        while len(usuario) > 40:
+            print("Cantidad de caracteres no valida")
+            usuario = str(input("Coloque nuevamente un nombre de usuario con menos de 40 letras: "))
+            if len(usuario) < 40:
+                break
+        nombre_archivo = str(input("Coloque a continuación el nombre del archivo que contiene la sopa de letras que va a jugar (no debe ser mayor a 30 caracteres): "))
+        while len(nombre_archivo) > 30:
+            print("Cantidad de caracteres no valida")
+            nombre_archivo = str(input("Coloque nuevamente un nombre de archivo con menos de 30 letras: "))
+            if len(nombre_archivo) < 30:
+                break
+        return usuario, nombre_archivo
 
 class Buscar_Archivo:
     def __init__(self, sopa_de_letras, nombre_archivo):
@@ -33,13 +49,18 @@ class Buscar_Archivo:
 
 class Juego: # Esta clase es para jugar el programa. Imprime el tablero inicial y termina el juego. La busqueda de palabras y la reimpresión de tableros va en otras clases.
     #También agrega el jugador/usuario.
-    def __init__(self, usuario, nombre_archivo, lista_palabras_encontradas, lista_palabras_no_encontradas, puntaje):
+    def __init__(self, usuario, nombre_archivo, lista_palabras_encontradas, lista_palabras_no_encontradas, lista_palabras_tablero, tablero, puntaje, palabra):
         self.usuario = usuario
         self.nombre_archivo = nombre_archivo
         self.lista_palabras_encontradas = lista_palabras_encontradas
         self.lista_palabras_no_encontradas = lista_palabras_no_encontradas
+        self.lista_palabras_tablero = lista_palabras_tablero
+        self.tablero = tablero
         self.puntaje = puntaje
+        self.palabra = palabra
 
+    def __str__(self):
+        print('Instrucciones: El juego consiste en que puedas jugar alguna de las sopas de letras ya creadas. Para eso vas a tener que colocar un nombre de usuario y el nombre de la sopa de letra que querés jugar. Una vez hecho este paso vas a ver el tablero, cuando encuentres una palabra... ¡Escribila! Después de escribir la palabra (si esta se encontraba en el tablero) se va a volver a mostrar el tablero con la palabra que encontraste en MAYUSCULA. Así hasta que pongas "fin" o encuentres todas las palabras. Una vez terminado se te va a devolver el puntaje que es la cantidad de palabras encontradas en la sopa de letras ¡Buena suerte y a jugar!')
 
     def imprimir(self): #imprime el tablero del archivo encontrado.
         self.nombre_archivo = self.nombre_archivo , '_solucion'
@@ -51,16 +72,15 @@ class Juego: # Esta clase es para jugar el programa. Imprime el tablero inicial 
             return self.tablero, self.diccionario
         
     def encontrar_palabra(self): #Busca la palabra
-        if self.palabra_usuario in self.diccionario:
+        if self.palabra in self.diccionario:
             print()
     
     def pedir_palabras(self): #Pide las palabras constantemente hasta que se coloca "fin"
-        self.palabra = Palabra.palabra_usuario
-        if self.palabra != 'fin':
-            #! CORRER TABLERO, ETC
-            pass
-        else:
-            print('La carga de palabras terminó con éxito.')
+        for self.palabra in self.tablero:
+            if self.palabra != 'fin':
+                Tablero().verifica_palabra()
+            else:
+                print('La carga de palabras terminó con éxito.')
 
     def terminar_juego(self):
         for self.palabra in self.lista_palabras_tablero:
@@ -71,14 +91,10 @@ class Juego: # Esta clase es para jugar el programa. Imprime el tablero inicial 
         if len(self.lista_palabras_no_encontradas) != 0:
             self.lista_palabras_no_encontradas.sort()
             print ('¡Upa! Te faltaron encontrar las siguientes palabras: ', self.lista_palabras_no_encontradas , '. Recordá que cada palabra vale un punto y que las palabras no encontradas se le restan total de las palabras.')
+            print ('Las palabras que sí encontraste fueron: ', self.lista_palabras_encontradas)
         else:
             print('¡Felicitaciones! Encontraste todas las palabras de la sopa de letras.')
 
-    def agregar_jugador(self):
-        #! No me termina de cerrar.
-        #? Para que llamo acá al usuario?
-        self.saludo = '¡Hola ' , self.usuario , '! ¡Bienvenidx!'
-        print(self.saludo)
 
 class Jugador:
     def __init__(self, usuario, lista_palabras_encontradas, lista_palabras_tablero):
@@ -95,19 +111,23 @@ class Jugador:
     
 
 class Palabra:
-    def __init__(self):
-        pass #? Tengo que hacer algo acá?
+    def __init__(self, lista_palabras_encontradas, lista_palabras_tablero):
+        self.lista_palabras_encontradas = lista_palabras_encontradas
+        self.lista_palabras_tablero = lista_palabras_tablero
+        pass
     
     def obtener_palabra(self):
-        self.palabra_usuario = input('Coloque la palabra que encontró: ')
+        while len(self.lista_palabras_encontradas) != len(self.lista_palabras_tablero) or Palabra().obtener_palabra() != "fin":
+            self.palabra_usuario = input('Coloque la palabra que encontró: ')
         return self.palabra_usuario
     
 
 class Tablero:
-    def __init__(self, diccionario, palabra_encontrada, tablero):
+    def __init__(self, diccionario, palabra_encontrada, tablero, diccionario_claves):
         self.diccionario = diccionario
         self.palabra_encontrada = palabra_encontrada
         self.tablero = tablero
+        self.diccionario_claves = diccionario_claves
 
     def imprimir(self):
         print(Tablero.pasar_mayuscula())
@@ -120,25 +140,36 @@ class Tablero:
         return print('Esa palabra no está en la sopa de letras o está mal escrita.')
 
     def pasar_mayuscula(self): # Tendría que poder usar las coordenadas del diccionario para constatar el lugar de la palabra y por ende cada letra pero no se me ocurre como.
-        self.palabra_encontrada = Tablero.verifica_palabra(self.diccionario, self.palabra_encontrada)
-        for palabra_encontrada in self.tablero: #! No me termina de cerrar....
-                if palabra_encontrada == str.lower(palabra_encontrada):
-                    palabra_encontrada = str.upper(palabra_encontrada)
-        
-        return print(self.tablero)
+        for self.palabra_encontrada in self.diccionario.keys():
+            valores = self.palabra_encontrada.key()
+            x_inicial, y_inicial, x_final, y_final = valores
+            if x_inicial == x_final:
+                while y_inicial != y_final:
+                    y = y_inicial
+                    x = x_inicial
+                    self.tablero[y][x].upper()
+                    y += 1
+            else: 
+                while x_inicial != x_final:
+                    y = y_inicial
+                    x = x_inicial
+                    self.tablero[y][x].upper()
+                    x += 1    
+        return self.tablero
     
 
 
 class Programa:
     def main():
-        usuario = Obtener_Datos.pedir_datos_usuario()        
-        nombre_archivo = Buscar_Archivo.busqueda_archivo()
+        Juego.__str__()
+        usuario, nombre_archivo = Obtener_Datos().pedir_datos_usuario()    
         lista_palabras_encontradas = []
         lista_palabras_no_encontradas = []
-        puntaje = Jugador.imprimir_puntaje()
-        tablero, diccionario = Juego.imprimir()
-        palabra_encontrada = Palabra.obtener_palabra()
-        Juego(usuario, nombre_archivo, lista_palabras_encontradas, lista_palabras_no_encontradas, puntaje)
+        puntaje = Jugador().imprimir_puntaje()
+        tablero, diccionario = Juego().imprimir()
+        palabra_encontrada = Palabra().obtener_palabra()
+        lista_palabras_tablero = [] #Falta completar
+        Juego(usuario, nombre_archivo, lista_palabras_encontradas, lista_palabras_no_encontradas, lista_palabras_tablero, tablero, puntaje, palabra_encontrada)
         Tablero(diccionario, palabra_encontrada, tablero)
         Jugador(usuario, lista_palabras_encontradas, lista_palabras_no_encontradas)
 
